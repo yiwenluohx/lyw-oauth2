@@ -1,0 +1,41 @@
+server:
+  port: 9201
+spring:
+  application:
+    name: lyw-oauth2-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          lower-case-service-id: true #启用服务实例id名称小写支持
+          enabled: true #启用基于服务发现的路由定位
+      routes:
+        - id: oauth2-api-route
+          uri: lb:http://lyw-oauth2-api
+          predicates:
+            - Path=/api/**
+          filters:
+            - StripPrefix=1
+        - id: oauth2-auth-route
+          uri: lb://lyw-oauth2-auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: 'http://localhost:9401/rsa/publicKey' #配置RSA的公钥访问地址
+    redis:
+      database: 0
+      port: 6379
+      host: localhost
+      password:
+secure:
+  ignore:
+    urls: #配置白名单路径
+      - "/actuator/**"
+      - "/auth/oauth/token"
+
+
