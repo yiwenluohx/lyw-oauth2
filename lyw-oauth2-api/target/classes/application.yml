@@ -1,0 +1,21 @@
+server:
+  port: 9501
+spring:
+  application:
+    name: lyw-oauth2-api
+
+#服务注册
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+

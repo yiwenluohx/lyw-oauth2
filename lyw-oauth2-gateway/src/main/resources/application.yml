@@ -7,8 +7,8 @@ spring:
     gateway:
       discovery:
         locator:
-          lower-case-service-id: true #ÆôÓÃ·şÎñÊµÀıidÃû³ÆĞ¡Ğ´Ö§³Ö
-          enabled: true #ÆôÓÃ»ùÓÚ·şÎñ·¢ÏÖµÄÂ·ÓÉ¶¨Î»
+          lower-case-service-id: true #å¯ç”¨æœåŠ¡å®ä¾‹idåç§°å°å†™æ”¯æŒ
+          enabled: true #å¯ç”¨åŸºäºæœåŠ¡å‘ç°çš„è·¯ç”±å®šä½
       routes:
         - id: oauth2-api-route
           uri: lb:http://lyw-oauth2-api
@@ -26,7 +26,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: 'http://localhost:9401/rsa/publicKey' #ÅäÖÃRSAµÄ¹«Ô¿·ÃÎÊµØÖ·
+          jwk-set-uri: 'http://localhost:9401/rsa/publicKey' #é…ç½®RSAçš„å…¬é’¥è®¿é—®åœ°å€
     redis:
       database: 0
       port: 6379
@@ -34,7 +34,7 @@ spring:
       password:
 secure:
   ignore:
-    urls: #ÅäÖÃ°×Ãûµ¥Â·¾¶
+    urls: #é…ç½®ç™½åå•è·¯å¾„
       - "/actuator/**"
       - "/auth/oauth/token"
 

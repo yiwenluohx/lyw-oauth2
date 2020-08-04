@@ -1,0 +1,41 @@
+server:
+  port: 9201
+spring:
+  application:
+    name: lyw-oauth2-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          lower-case-service-id: true #���÷���ʵ��id����Сд֧��
+          enabled: true #���û��ڷ����ֵ�·�ɶ�λ
+      routes:
+        - id: oauth2-api-route
+          uri: lb:http://lyw-oauth2-api
+          predicates:
+            - Path=/api/**
+          filters:
+            - StripPrefix=1
+        - id: oauth2-auth-route
+          uri: lb://lyw-oauth2-auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: 'http://localhost:9401/rsa/publicKey' #����RSA�Ĺ�Կ���ʵ�ַ
+    redis:
+      database: 0
+      port: 6379
+      host: localhost
+      password:
+secure:
+  ignore:
+    urls: #���ð�����·��
+      - "/actuator/**"
+      - "/auth/oauth/token"
+
+

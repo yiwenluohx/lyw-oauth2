@@ -19,7 +19,7 @@ spring:
     port: 6379
     host: localhost
     password:
-#·şÎñ×¢²á
+#æœåŠ¡æ³¨å†Œ
 eureka:
   instance:
     prefer-ip-address: true
