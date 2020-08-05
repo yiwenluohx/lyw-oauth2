@@ -4,9 +4,8 @@ F:\projects\lyw-oauth2\lyw-oauth2-auth\src\main\java\com\lyw\cloud\lyw\oauth2\au
 F:\projects\lyw-oauth2\lyw-oauth2-auth\src\main\java\com\lyw\cloud\lyw\oauth2\auth\service\ResourceServiceImpl.java
 F:\projects\lyw-oauth2\lyw-oauth2-auth\src\main\java\com\lyw\cloud\lyw\oauth2\auth\LywOauth2AuthApplication.java
 F:\projects\lyw-oauth2\lyw-oauth2-auth\src\main\java\com\lyw\cloud\lyw\oauth2\auth\config\WebSecurityConfig.java
+F:\projects\lyw-oauth2\lyw-oauth2-auth\src\main\java\com\lyw\cloud\lyw\oauth2\auth\dao\UserDao.java
 F:\projects\lyw-oauth2\lyw-oauth2-auth\src\main\java\com\lyw\cloud\lyw\oauth2\auth\controller\KeyPairController.java
 F:\projects\lyw-oauth2\lyw-oauth2-auth\src\main\java\com\lyw\cloud\lyw\oauth2\auth\component\JwtTokenEnhancer.java
 F:\projects\lyw-oauth2\lyw-oauth2-auth\src\main\java\com\lyw\cloud\lyw\oauth2\auth\constant\RedisConstant.java
-F:\projects\lyw-oauth2\lyw-oauth2-auth\src\main\java\com\lyw\cloud\lyw\oauth2\auth\domain\UserDTO.java
 F:\projects\lyw-oauth2\lyw-oauth2-auth\src\main\java\com\lyw\cloud\lyw\oauth2\auth\config\Oauth2ServerConfig.java
-F:\projects\lyw-oauth2\lyw-oauth2-auth\src\main\java\com\lyw\cloud\lyw\oauth2\auth\domain\SecurityUser.java

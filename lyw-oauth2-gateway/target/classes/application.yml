@@ -1,5 +1,13 @@
 server:
   port: 9201
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true #是否向服务注册中心注册自己
+    fetch-registry: true #是否检索服务
+    serviceUrl: #服务注册中心的配置内容，指定服务注册中心的位置
+      defaultZone: http://localhost:9101/eureka/
 spring:
   application:
     name: lyw-oauth2-gateway
@@ -7,8 +15,8 @@ spring:
     gateway:
       discovery:
         locator:
-          lower-case-service-id: true #���÷���ʵ��id����Сд֧��
-          enabled: true #���û��ڷ����ֵ�·�ɶ�λ
+          lower-case-service-id: true #启用服务实例id名称小写支持
+          enabled: true #启用基于服务发现的路由定位
       routes:
         - id: oauth2-api-route
           uri: lb:http://lyw-oauth2-api
@@ -16,17 +24,17 @@ spring:
             - Path=/api/**
           filters:
             - StripPrefix=1
-        - id: oauth2-auth-route
-          uri: lb://lyw-oauth2-auth
-          predicates:
-            - Path=/auth/**
-          filters:
-            - StripPrefix=1
+#        - id: oauth2-auth-route
+#          uri: lb://lyw-oauth2-auth
+#          predicates:
+#            - Path=/auth/**
+#          filters:
+#            - StripPrefix=1
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: 'http://localhost:9401/rsa/publicKey' #����RSA�Ĺ�Կ���ʵ�ַ
+          jwk-set-uri: 'http://localhost:9401/rsa/publicKey' #配置RSA的公钥访问地址
     redis:
       database: 0
       port: 6379
@@ -34,8 +42,9 @@ spring:
       password:
 secure:
   ignore:
-    urls: #���ð�����·��
+    urls: #配置白名单路径
       - "/actuator/**"
-      - "/auth/oauth/token"
+      - "/api/user/register"
+      - "/api/user/login"
 
 

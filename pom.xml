@@ -18,6 +18,8 @@
         <module>lyw-oauth2-auth</module>
         <module>lyw-oauth2-api</module>
         <module>lyw-oauth2-gateway</module>
+        <module>lyw-oauth2-eureka</module>
+        <module>lyw-oauth2-domain</module>
     </modules>
 
     <properties>

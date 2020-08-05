@@ -1,5 +1,13 @@
 server:
   port: 9201
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true #是否向服务注册中心注册自己
+    fetch-registry: true #是否检索服务
+    serviceUrl: #服务注册中心的配置内容，指定服务注册中心的位置
+      defaultZone: http://localhost:9101/eureka/
 spring:
   application:
     name: lyw-oauth2-gateway
@@ -16,12 +24,12 @@ spring:
             - Path=/api/**
           filters:
             - StripPrefix=1
-        - id: oauth2-auth-route
-          uri: lb://lyw-oauth2-auth
-          predicates:
-            - Path=/auth/**
-          filters:
-            - StripPrefix=1
+#        - id: oauth2-auth-route
+#          uri: lb://lyw-oauth2-auth
+#          predicates:
+#            - Path=/auth/**
+#          filters:
+#            - StripPrefix=1
   security:
     oauth2:
       resourceserver:
@@ -36,6 +44,7 @@ secure:
   ignore:
     urls: #配置白名单路径
       - "/actuator/**"
-      - "/auth/oauth/token"
+      - "/api/user/register"
+      - "/api/user/login"
 
 
