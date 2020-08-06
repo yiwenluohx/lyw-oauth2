@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: lyw-oauth2-eureka
+server:
+  port: 9101
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    #�����Լ��Ǹ������
+    registerWithEureka: false    #false��ʾ����ע������ע���Լ�
+    fetchRegistry: false         #false��ʾ�Լ�����ע�����ģ�ְ����ά��ʵ�������μӼ���
+    serviceUrl:                  #����eureka server�Ľ�����ַ�������Ⱪ¶�ĵ�ַ
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/

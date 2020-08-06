@@ -1,9 +1,14 @@
 com\lyw\cloud\lyw\oauth2\auth\controller\KeyPairController.class
 com\lyw\cloud\lyw\oauth2\auth\service\ResourceServiceImpl.class
 com\lyw\cloud\lyw\oauth2\auth\config\WebSecurityConfig.class
+com\lyw\cloud\lyw\oauth2\auth\domain\Role.class
+com\lyw\cloud\lyw\oauth2\auth\domain\User.class
 com\lyw\cloud\lyw\oauth2\auth\config\Oauth2ServerConfig.class
+com\lyw\cloud\lyw\oauth2\auth\dao\UserDao.class
 com\lyw\cloud\lyw\oauth2\auth\constant\MessageConstant.class
 com\lyw\cloud\lyw\oauth2\auth\component\JwtTokenEnhancer.class
+com\lyw\cloud\lyw\oauth2\auth\domain\JWT.class
+com\lyw\cloud\lyw\oauth2\auth\domain\user\response\UserLoginDTO.class
 com\lyw\cloud\lyw\oauth2\auth\config\RedisRepositoryConfig.class
 com\lyw\cloud\lyw\oauth2\auth\domain\UserDTO.class
 com\lyw\cloud\lyw\oauth2\auth\LywOauth2AuthApplication.class
