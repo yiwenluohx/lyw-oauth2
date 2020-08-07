@@ -1,6 +1,6 @@
 package com.lyw.cloud.lyw.oauth2.auth.dao;
 
-import com.lyw.cloud.lyw.oauth2.auth.domain.User;
+import com.lyw.cloud.lyw.oauth2.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollUtil;
 import com.lyw.cloud.lyw.oauth2.auth.constant.MessageConstant;
 import com.lyw.cloud.lyw.oauth2.auth.dao.UserDao;
 import com.lyw.cloud.lyw.oauth2.auth.domain.SecurityUser;
-import com.lyw.cloud.lyw.oauth2.auth.domain.User;
 import com.lyw.cloud.lyw.oauth2.auth.domain.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountExpiredException;
