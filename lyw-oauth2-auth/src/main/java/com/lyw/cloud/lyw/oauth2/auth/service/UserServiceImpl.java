@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserDetailsService {
         userList = new ArrayList<>();
         userList.add(new UserDTO(1L,"macro", password,1, CollUtil.toList("ADMIN")));
         userList.add(new UserDTO(2L,"andy", password,1, CollUtil.toList("TEST")));
+        userList.add(new UserDTO(3L,"luohx", password,1, CollUtil.toList("ADMIN")));
     }
 
     @Autowired

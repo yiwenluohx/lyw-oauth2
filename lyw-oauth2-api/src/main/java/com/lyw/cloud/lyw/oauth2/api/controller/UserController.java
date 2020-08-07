@@ -38,8 +38,7 @@ public class UserController {
     @PostMapping("/login")
     public UserLoginDTO login(@RequestParam("username") String username,
                               @RequestParam("password") String password) {
-//        return userDetailService.login(username, password);
-        return null;
+        return userService.login(username, password);
     }
 
 }
