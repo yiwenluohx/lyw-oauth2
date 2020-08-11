@@ -8,6 +8,8 @@ import com.lyw.cloud.lyw.oauth2.domain.user.response.UserLoginDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.GET;
+
 /**
  * @Author: luohx
  * @Description: 获取登录用户信息接口
@@ -39,6 +41,14 @@ public class UserController {
     public UserLoginDTO login(@RequestParam("username") String username,
                               @RequestParam("password") String password) {
         return userService.login(username, password);
+    }
+
+    @GetMapping("/getUserInfo")
+    public User getUserInfo(@RequestParam("id") Long id) {
+        User user = new User();
+        user.setId(id);
+        user.setUsername("虚拟人物");
+        return user;
     }
 
 }

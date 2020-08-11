@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@AllArgsConstructor
+//@AllArgsConstructor
 public class UserDTO{
     private Long id;
     private String username;

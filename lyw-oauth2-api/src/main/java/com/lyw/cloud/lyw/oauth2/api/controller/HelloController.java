@@ -14,4 +14,9 @@ public class HelloController {
     public String hello() {
         return "Hello World.";
     }
+
+    @GetMapping("/exist")
+    public String exist() {
+        return "又要失业了...";
+    }
 }
