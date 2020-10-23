@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 public class AuthServiceHystrix implements AuthServiceClient {
     @Override
     public JWT getToken(String grantType, String clientId, String clientSecret, String username, String password) {
-                log.error("获取JWT Token失败, grantType: {}, clientId: {}, clientSecret: {}, username: {}, password: {}",
-                 grantType, clientId, clientSecret, username, password);
+        log.error("获取JWT Token失败, grantType: {}, clientId: {}, clientSecret: {}, username: {}, password: {}",
+                grantType, clientId, clientSecret, username, password);
         return null;
     }
 //    @Override

@@ -1,0 +1,5 @@
+server:
+  port: 9507
+spring:
+  application:
+    name: oauth2-password

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 public class LoginUserHolder {
 
-    public UserDTO getCurrentUser(){
+    public UserDTO getCurrentUser() {
         //从Header中获取用户信息
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = servletRequestAttributes.getRequest();
@@ -27,7 +27,7 @@ public class LoginUserHolder {
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(userJsonObject.getStr("user_name"));
         userDTO.setId(Convert.toLong(userJsonObject.get("id")));
-        userDTO.setRoles(Convert.toList(String.class,userJsonObject.get("authorities")));
+        userDTO.setRoles(Convert.toList(String.class, userJsonObject.get("authorities")));
         return userDTO;
     }
 }

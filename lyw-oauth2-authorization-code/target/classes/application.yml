@@ -1,0 +1,5 @@
+server:
+  port: 9505
+spring:
+  application:
+    name: oauth2-authorization-code

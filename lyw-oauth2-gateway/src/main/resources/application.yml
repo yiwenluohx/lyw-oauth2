@@ -24,12 +24,12 @@ spring:
             - Path=/api/**
           filters:
             - StripPrefix=1
-#        - id: oauth2-auth-route
-#          uri: lb://lyw-oauth2-auth
-#          predicates:
-#            - Path=/auth/**
-#          filters:
-#            - StripPrefix=1
+  #        - id: oauth2-auth-route
+  #          uri: lb://lyw-oauth2-auth
+  #          predicates:
+  #            - Path=/auth/**
+  #          filters:
+  #            - StripPrefix=1
   security:
     oauth2:
       resourceserver:

@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 //@AllArgsConstructor
-public class UserDTO{
+public class UserDTO {
     private Long id;
     private String username;
     private String password;

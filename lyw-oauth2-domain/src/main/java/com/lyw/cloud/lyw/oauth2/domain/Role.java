@@ -3,6 +3,7 @@ package com.lyw.cloud.lyw.oauth2.domain;
 import org.springframework.security.core.GrantedAuthority;
 import lombok.Getter;
 import lombok.Setter;
+
 import javax.persistence.*;
 
 /**

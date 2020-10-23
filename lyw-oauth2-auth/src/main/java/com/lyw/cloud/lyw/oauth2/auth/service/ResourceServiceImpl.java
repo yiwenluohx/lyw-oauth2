@@ -25,7 +25,7 @@ public class ResourceServiceImpl {
 
     private Map<String, List<String>> resourceRolesMap;
     @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private PermissionDao permissionDao;
 
@@ -33,9 +33,9 @@ public class ResourceServiceImpl {
     public void initData() {
         resourceRolesMap = new TreeMap<>();
         List<Permission> permissionList = permissionDao.findAll();
-        if(!CollUtil.isEmpty(permissionList)){
-            for (Permission perm: permissionList) {
-                if(!CollUtil.isEmpty(perm.getAuthorities())){
+        if (!CollUtil.isEmpty(permissionList)) {
+            for (Permission perm : permissionList) {
+                if (!CollUtil.isEmpty(perm.getAuthorities())) {
                     List<String> perms = perm.getAuthorities().stream().map(m -> m.getName()).collect(Collectors.toList());
                     resourceRolesMap.put(perm.getUrl(), perms);
                 }
