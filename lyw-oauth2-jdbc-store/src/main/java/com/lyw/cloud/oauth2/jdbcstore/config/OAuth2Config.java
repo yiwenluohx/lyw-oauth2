@@ -29,8 +29,9 @@ import javax.sql.DataSource;
 
 /**
  * @Author: luohx
- * @Description: 描述
- * @Date: 2020/10/23 0023 17:53
+ * @Description: AuthorizationServerConfigurerAdapter只是一个提供给开发配置ClientDetailsServiceConfigurer、AuthorizationServerEndpointsConfigurer、
+ * AuthorizationServerSecurityConfigurer空壳类并没有持有以上三个配置Bean对象.由初始化时调用AuthorizationServerConfigurerAdapter.configure(xxxConfigure) 给机会开发注入、配置
+ * @Date: 2020/10/23  17:53
  */
 @Configuration
 @EnableAuthorizationServer
@@ -47,20 +48,29 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     @Qualifier("dataSource")
     private DataSource dataSource;
 
+    /**
+     * 主要是注入ClientDetailsService实例对象（唯一配置注入）。其它地方可以通过ClientDetailsServiceConfigurer调用开发配置的ClientDetailsService。
+     * 系统提供的二个ClientDetailsService实现类：JdbcClientDetailsService、InMemoryClientDetailsService
+     */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         // 配置数据从oauth_client_details表读取来存储
         clients.withClientDetails(clientDetailsService());
     }
 
+    /**
+     *  AuthorizationServerEndpointsConfigurer其实是一个装载类，装载Endpoints所有相关的类配置（AuthorizationServer、TokenServices、TokenStore、ClientDetailsService、UserDetailsService
+     *
+     */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         //保存token
         endpoints.authenticationManager(authenticationManager)
+                //token保存方式
                 .tokenStore(jdbcTokenStore())
                 //设置userDetailsService
                 .userDetailsService(userDetailsService)
-                //储存授权码
+                //储存授权码（redis、db、内存）
                 .authorizationCodeServices(authorizationCodeServices())
                 //设置userApprovalHandler
                 .userApprovalHandler(userApprovalHandler())
@@ -71,8 +81,18 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     }
 
     /**
-     * 认证服务器的安全配置
-     * @param security
+     * Spring Security安全配置提供给AuthorizationServer去配置AuthorizationServer的端点（/oauth/****）的安全访问规则、过滤器Filter
+     * *  配置：安全检查流程,用来配置令牌端点（Token Endpoint）的安全与权限访问
+     * 	 *  默认过滤器：BasicAuthenticationFilter
+     * 	 *  1、oauth_client_details表中clientSecret字段加密【ClientDetails属性secret】
+     * 	 *  2、CheckEndpoint类的接口 oauth/check_token 无需经过过滤器过滤，默认值：denyAll()
+     * 	 * 对以下的几个端点进行权限配置：
+     * 	 * /oauth/authorize：授权端点
+     * 	 * /oauth/token：令牌端点
+     * 	 * /oauth/confirm_access：用户确认授权提交端点
+     * 	 * /oauth/error：授权服务错误信息端点
+     * 	 * /oauth/check_token：用于资源服务访问的令牌解析端点
+     * 	 * /oauth/token_key：提供公有密匙的端点，如果使用JWT令牌的话
      * @throws Exception
      */
     @Override

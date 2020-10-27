@@ -1,0 +1,10 @@
+server:
+  port: 9509
+spring:
+  application:
+    name: oauth2-redis-store
+  redis:
+    database: 15
+    host: 127.0.0.1
+    password:
+    port: 6379

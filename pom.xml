@@ -20,6 +20,7 @@
         <module>lyw-oauth2-gateway</module>
         <module>lyw-oauth2-eureka</module>
         <module>lyw-oauth2-domain</module>
+        <module>sso-oauth2</module>
     </modules>
 
     <properties>
@@ -40,10 +41,10 @@
             <version>${hutool-version}</version>
         </dependency>
         <!--表明是Eureka Client客户端-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.cloud</groupId>-->
+            <!--<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>-->
+        <!--</dependency>-->
     </dependencies>
 
     <dependencyManagement>

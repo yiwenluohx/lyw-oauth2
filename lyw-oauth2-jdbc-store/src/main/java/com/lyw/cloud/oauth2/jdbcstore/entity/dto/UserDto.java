@@ -18,7 +18,7 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto  implements Serializable {
+public class UserDto implements Serializable {
     /** 用户Id**/
     private BigInteger id;
 

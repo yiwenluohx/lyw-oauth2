@@ -15,7 +15,8 @@ import javax.annotation.Resource;
 
 /**
  * @Author: luohx
- * @Description: SpringSecurity安全配置
+ * @Description: SpringSecurity安全配置  Spring Security 是一个安全管理框架，
+ * 它的安全是基于一条长长的过滤器链
  * @Date: 2020/10/23 19:08
  */
 @Configuration
@@ -38,6 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .withUser("nicky")
 //                .password("{noop}123")
 //                .roles("admin");
+        // inMemoryAuthentication、jdbcAuthentication 以及 userDetailsService  配置数据源
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(new CustomPasswordEncoder());
         auth.parentAuthenticationManager(authenticationManagerBean());
