@@ -23,15 +23,22 @@ import javax.annotation.Resource;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    //UserDetailsService对象也会存储在HttpSecurity对象的全局共享对象中，以便其它SecurityContextConfigurer实现使用UserDetailsService对象也会存储在HttpSecurity对象的全局共享对象中，以便其它SecurityContextConfigurer实现使用
     @Resource(name = "userDetailService")
     private UserDetailsService userDetailsService;
 
+    /**
+     *  授权服务配置需要用到这个bean（将最终生成的AuthenticationManager对象暴露为Bean）
+     */
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
+    /**
+     *  自定义AuthenticationManager
+     */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //        auth.inMemoryAuthentication()
@@ -53,6 +60,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/favicon.ico");
     }
 
+    /**
+     *  调用AuthorizationServerConfigurerAdapter子类进行配置
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http   // 配置登录页并允许访问
@@ -62,7 +72,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 配置登出页面
                 .and().logout().logoutUrl("/logout").logoutSuccessUrl("/")
                 .and().authorizeRequests().antMatchers("/oauth/**", "/login/**", "/logout/**").permitAll()
-                // 其余所有请求全部需要鉴权认证
+                // 其余所有请求全部需要鉴权认证（没有授权就跳转登录页）
+                //登录页面有记住我，使用.anyRequest().fullyAuthenticated()方法,authenticated()不支持记住我功能
                 .anyRequest().authenticated()
                 // 关闭跨域保护;
                 .and().csrf().disable();

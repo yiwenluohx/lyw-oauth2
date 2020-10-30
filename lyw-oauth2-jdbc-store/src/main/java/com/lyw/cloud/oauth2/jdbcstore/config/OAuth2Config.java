@@ -28,7 +28,7 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 /**
- * @Author: luohx
+ * @Author: luohx  密码前面都加了{noop}是JDBC这种查询方式默认的加密算法
  * @Description: AuthorizationServerConfigurerAdapter只是一个提供给开发配置ClientDetailsServiceConfigurer、AuthorizationServerEndpointsConfigurer、
  * AuthorizationServerSecurityConfigurer空壳类并没有持有以上三个配置Bean对象.由初始化时调用AuthorizationServerConfigurerAdapter.configure(xxxConfigure) 给机会开发注入、配置
  * @Date: 2020/10/23  17:53
@@ -51,6 +51,8 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     /**
      * 主要是注入ClientDetailsService实例对象（唯一配置注入）。其它地方可以通过ClientDetailsServiceConfigurer调用开发配置的ClientDetailsService。
      * 系统提供的二个ClientDetailsService实现类：JdbcClientDetailsService、InMemoryClientDetailsService
+     * 初始化ClientDetailsServiceBuilder
+     * 用来配置客户端详情服务（ClientDetailsService），客户端详情信息在这里进行初始化，你能够把客户端详情信息写死在这里或者是通过数据库来存储调取详情信息。
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -60,15 +62,16 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
     /**
      *  AuthorizationServerEndpointsConfigurer其实是一个装载类，装载Endpoints所有相关的类配置（AuthorizationServer、TokenServices、TokenStore、ClientDetailsService、UserDetailsService
-     *
+     * 用来配置授权（authorization）以及令牌（token）的访问端点和令牌服务(token services)
      */
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        //保存token
-        endpoints.authenticationManager(authenticationManager)
-                //token保存方式
+        endpoints
                 .tokenStore(jdbcTokenStore())
-                //设置userDetailsService
+                //配置令牌生成jwt转换器
+                //.accessTokenConverter(accessTokenConverter())
+                .authenticationManager(authenticationManager)
+                //刷新令牌授权将包含对用户详细信息的检查，确保账户仍然活动，设置userDetailsService
                 .userDetailsService(userDetailsService)
                 //储存授权码（redis、db、内存）
                 .authorizationCodeServices(authorizationCodeServices())
@@ -93,6 +96,8 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
      * 	 * /oauth/error：授权服务错误信息端点
      * 	 * /oauth/check_token：用于资源服务访问的令牌解析端点
      * 	 * /oauth/token_key：提供公有密匙的端点，如果使用JWT令牌的话
+     *  用来配置令牌端点(Token Endpoint)的安全约束
+     *
      * @throws Exception
      */
     @Override
@@ -106,6 +111,9 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
                 .allowFormAuthenticationForClients();
     }
 
+    /**
+     *  自定义JdbcClientDetailsServiceBuilder
+     */
     @Bean
     public ClientDetailsService clientDetailsService() {
         Assert.state(dataSource != null, "DataSource must be provided");
@@ -118,17 +126,25 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
         return new JdbcAuthorizationCodeServices(dataSource);
     }
 
+    /**
+     *  自定义JdbcTokenStore
+     */
     @Bean
     public TokenStore jdbcTokenStore() {
         Assert.state(dataSource != null, "DataSource must be provided");
         return new JdbcTokenStore(dataSource);
     }
 
+
+
     @Bean
     public OAuth2RequestFactory oAuth2RequestFactory() {
         return new DefaultOAuth2RequestFactory(clientDetailsService());
     }
 
+    /**
+     *  解决未保存用户的授权信息，导致每次登陆都要重新授权
+     */
     @Bean
     public UserApprovalHandler userApprovalHandler() {
         JdbcTokenStoreUserApprovalHandler approvalHandler = new JdbcTokenStoreUserApprovalHandler();
