@@ -40,11 +40,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication()
-//                //添加内置测试用户
-//                .withUser("nicky")
-//                .password("{noop}123")
-//                .roles("admin");
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(new CustomPasswordEncoder());
         auth.parentAuthenticationManager(authenticationManagerBean());

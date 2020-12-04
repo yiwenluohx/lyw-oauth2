@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,6 +24,7 @@ import org.springframework.security.oauth2.provider.request.DefaultOAuth2Request
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
@@ -31,7 +33,7 @@ import javax.sql.DataSource;
 /**
  * @Author: luohx
  * @Description: 描述
- * @Date: 2020/12/4 0004 15:40
+ * @Date: 2020/12/4 15:40
  */
 @Configuration
 @EnableAuthorizationServer
@@ -46,6 +48,9 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     @Autowired
     @Qualifier("dataSource")
     private DataSource dataSource;
+
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
 
     /**
      * 客户端详情相关配置
@@ -63,7 +68,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         //使用内存保存生成的token
         endpoints
-                .tokenStore(jdbcTokenStore())
+                .tokenStore(tokenStore())
                 //为password模式和code模式提供AuthenticationManager
                 .authenticationManager(authenticationManager)
                 //刷新令牌授权将包含对用户详细信息的检查，确保账户仍然活动，设置userDetailsService
@@ -107,6 +112,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     public AuthorizationCodeServices authorizationCodeServices() {
         Assert.state(dataSource != null, "DataSource must be provided");
         return new JdbcAuthorizationCodeServices(dataSource);
+
     }
 
     /**
@@ -116,6 +122,11 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     public TokenStore jdbcTokenStore() {
         Assert.state(dataSource != null, "DataSource must be provided");
         return new JdbcTokenStore(dataSource);
+    }
+
+    @Bean
+    TokenStore tokenStore() {
+        return new RedisTokenStore(redisConnectionFactory);
     }
 
     @Bean
