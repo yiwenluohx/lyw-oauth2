@@ -1,6 +1,13 @@
 server:
   port: 18080
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: oauth2-conformity
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/score-mall?autoReconnect=true&useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useSSL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
 

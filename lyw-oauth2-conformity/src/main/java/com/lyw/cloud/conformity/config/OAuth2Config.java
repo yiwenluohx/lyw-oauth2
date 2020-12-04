@@ -1,16 +1,32 @@
 package com.lyw.cloud.conformity.config;
 
+import com.lyw.cloud.conformity.component.JdbcTokenStoreUserApprovalHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
+import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
+import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.util.Assert;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
 
 /**
  * @Author: luohx
@@ -24,51 +40,19 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    private static final String CLIENT_ID = "cms";
-    private static final String SECRET_CHAR_SEQUENCE = "{noop}secret";
-    private static final String SCOPE_READ = "read";
-    private static final String SCOPE_WRITE = "write";
-    private static final String TRUST = "trust";
-    private static final String USER = "user";
-    private static final String ALL = "all";
-    private static final int ACCESS_TOKEN_VALIDITY_SECONDS = 2 * 60;
-    private static final int FREFRESH_TOKEN_VALIDITY_SECONDS = 2 * 60;
+    @Resource(name = "userDetailService")
+    private UserDetailsService userDetailsService;
 
-    // 密码模式授权模式
-    private static final String GRANT_TYPE_PASSWORD = "password";
-    //授权码模式
-    private static final String AUTHORIZATION_CODE = "authorization_code";
-    //refresh token模式
-    private static final String REFRESH_TOKEN = "refresh_token";
-    //简化授权模式
-    private static final String IMPLICIT = "implicit";
-    //指定哪些资源是需要授权验证的
-    private static final String RESOURCE_ID = "resource_id";
+    @Autowired
+    @Qualifier("dataSource")
+    private DataSource dataSource;
 
     /**
      * 客户端详情相关配置
      */
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients
-                //使用内存存储
-                .inMemory()
-                //标记客户端id
-                .withClient(CLIENT_ID)
-                //客户端安全码
-                .secret(SECRET_CHAR_SEQUENCE)
-                //为true 直接自动授权成功返回code
-                .autoApprove(true)
-                //重定向uri  authorizationcode和implicit需要该值进行校验
-                .redirectUris("http://127.0.0.1:8084/cms/login")
-                //允许授权范围
-                .scopes(ALL)
-                //token 时间秒
-                .accessTokenValiditySeconds(ACCESS_TOKEN_VALIDITY_SECONDS)
-                //刷新token 时间 秒
-                .refreshTokenValiditySeconds(FREFRESH_TOKEN_VALIDITY_SECONDS)
-                //允许授权类型(启用password授权模式和code模式，需要AuthorizationServerEndpointsConfigurer提供 AuthenticationManager)
-                .authorizedGrantTypes(AUTHORIZATION_CODE, GRANT_TYPE_PASSWORD);
+        clients.withClientDetails(clientDetailsService());
     }
     /**
      * 认证服务端点配置类
@@ -79,9 +63,19 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         //使用内存保存生成的token
         endpoints
+                .tokenStore(jdbcTokenStore())
                 //为password模式和code模式提供AuthenticationManager
                 .authenticationManager(authenticationManager)
-                .tokenStore(memoryTokenStore());
+                //刷新令牌授权将包含对用户详细信息的检查，确保账户仍然活动，设置userDetailsService
+                .userDetailsService(userDetailsService)
+                //储存授权码（redis、db、内存）
+                .authorizationCodeServices(authorizationCodeServices())
+                //设置userApprovalHandler
+                .userApprovalHandler(userApprovalHandler())
+                //支持获取token方式
+                .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST,HttpMethod.PUT,HttpMethod.DELETE,HttpMethod.OPTIONS)
+                //刷新token
+                .reuseRefreshTokens(true);
     }
 
     /**
@@ -100,9 +94,45 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
                 .allowFormAuthenticationForClients();
     }
 
+    /**
+            *  自定义JdbcClientDetailsServiceBuilder
+     */
     @Bean
-    public TokenStore memoryTokenStore() {
-        // 最基本的InMemoryTokenStore生成token
-        return new InMemoryTokenStore();
+    public ClientDetailsService clientDetailsService() {
+        Assert.state(dataSource != null, "DataSource must be provided");
+        return new JdbcClientDetailsService(dataSource);
     }
+
+    @Bean
+    public AuthorizationCodeServices authorizationCodeServices() {
+        Assert.state(dataSource != null, "DataSource must be provided");
+        return new JdbcAuthorizationCodeServices(dataSource);
+    }
+
+    /**
+     *  自定义JdbcTokenStore
+     */
+    @Bean
+    public TokenStore jdbcTokenStore() {
+        Assert.state(dataSource != null, "DataSource must be provided");
+        return new JdbcTokenStore(dataSource);
+    }
+
+    @Bean
+    public OAuth2RequestFactory oAuth2RequestFactory() {
+        return new DefaultOAuth2RequestFactory(clientDetailsService());
+    }
+
+    /**
+     *  解决未保存用户的授权信息，导致每次登陆都要重新授权
+     */
+    @Bean
+    public UserApprovalHandler userApprovalHandler() {
+        JdbcTokenStoreUserApprovalHandler approvalHandler = new JdbcTokenStoreUserApprovalHandler();
+        approvalHandler.setTokenStore(jdbcTokenStore());
+        approvalHandler.setClientDetailsService(clientDetailsService());
+        approvalHandler.setRequestFactory(oAuth2RequestFactory());
+        return approvalHandler;
+    }
+
 }

@@ -1,3 +1,14 @@
-com\lyw\cloud\conformity\config\OAuth2Config.class
 com\lyw\cloud\conformity\config\SecurityConfig.class
+com\lyw\cloud\conformity\entity\OauthClientDetails.class
+com\lyw\cloud\conformity\service\impl\UserDetailServiceImpl.class
+com\lyw\cloud\conformity\service\impl\OAuthServiceImpl.class
+com\lyw\cloud\conformity\component\JdbcTokenStoreUserApprovalHandler.class
+com\lyw\cloud\conformity\component\CustomPasswordEncoder.class
+com\lyw\cloud\conformity\entity\dto\OauthClientDetailsDto.class
+com\lyw\cloud\conformity\mapper\OAuthDao.class
+com\lyw\cloud\conformity\entity\User.class
+com\lyw\cloud\conformity\mapper\UserDao.class
+com\lyw\cloud\conformity\config\OAuth2Config.class
 com\lyw\cloud\conformity\LywOauth2ConformityApplication.class
+com\lyw\cloud\conformity\entity\dto\UserDto.class
+com\lyw\cloud\conformity\service\OAuthService.class

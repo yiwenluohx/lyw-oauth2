@@ -1,5 +1,6 @@
 package com.lyw.cloud.conformity.config;
 
+import com.lyw.cloud.conformity.component.CustomPasswordEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,6 +9,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+import javax.annotation.Resource;
 
 /**
  * @Author: luohx
@@ -18,6 +22,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    //UserDetailsService对象也会存储在HttpSecurity对象的全局共享对象中，以便其它SecurityContextConfigurer实现使用UserDetailsService对象也会存储在HttpSecurity对象的全局共享对象中，以便其它SecurityContextConfigurer实现使用
+    @Resource(name="userDetailService")
+    private UserDetailsService userDetailsService;
+
+    /**
+     *  授权服务配置需要用到这个bean（将最终生成的AuthenticationManager对象暴露为Bean）
+     */
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -29,11 +40,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                //添加内置测试用户
-                .withUser("nicky")
-                .password("{noop}123")
-                .roles("admin");
+//        auth.inMemoryAuthentication()
+//                //添加内置测试用户
+//                .withUser("nicky")
+//                .password("{noop}123")
+//                .roles("admin");
+        auth.userDetailsService(userDetailsService)
+                .passwordEncoder(new CustomPasswordEncoder());
+        auth.parentAuthenticationManager(authenticationManagerBean());
     }
 
     @Override
@@ -59,6 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().logout().logoutUrl("/logout").logoutSuccessUrl("/")
                 .and().authorizeRequests().antMatchers("/oauth/**", "/login/**", "/logout/**").permitAll()
                 //其余所有请求全部需要鉴权认证
+                //登录页面有记住我，使用.anyRequest().fullyAuthenticated()方法,authenticated()不支持记住我功能
                 .anyRequest().authenticated()
                 //关闭跨域保护
                 .and().csrf().disable();
