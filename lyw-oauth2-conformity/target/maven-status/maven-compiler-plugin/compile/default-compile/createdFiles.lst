@@ -1,0 +1,3 @@
+com\lyw\cloud\conformity\config\OAuth2Config.class
+com\lyw\cloud\conformity\config\SecurityConfig.class
+com\lyw\cloud\conformity\LywOauth2ConformityApplication.class

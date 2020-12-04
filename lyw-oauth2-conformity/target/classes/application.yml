@@ -1,0 +1,6 @@
+server:
+  port: 18080
+spring:
+  application:
+    name: oauth2-conformity
+

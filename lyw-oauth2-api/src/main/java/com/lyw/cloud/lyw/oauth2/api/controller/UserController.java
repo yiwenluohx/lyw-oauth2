@@ -8,8 +8,6 @@ import com.lyw.cloud.lyw.oauth2.domain.user.response.UserLoginDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.GET;
-
 /**
  * @Author: luohx
  * @Description: 获取登录用户信息接口
