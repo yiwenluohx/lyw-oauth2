@@ -16,3 +16,8 @@ spring:
     password:
     port: 6379
 
+platform:
+  oauth2:
+    token:
+      store:
+        type: default
