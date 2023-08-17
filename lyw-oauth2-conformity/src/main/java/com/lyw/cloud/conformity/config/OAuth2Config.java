@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,9 +23,8 @@ import org.springframework.security.oauth2.provider.code.AuthorizationCodeServic
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
-import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
-import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
@@ -37,6 +37,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableAuthorizationServer
+@Import({com.lyw.cloud.conformity.config.TokenStoreConfig.class})
 public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
     @Autowired
@@ -50,7 +51,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     private DataSource dataSource;
 
     @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
+    private TokenStore tokenStore;
 
     /**
      * 客户端详情相关配置
@@ -68,7 +69,8 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         //使用内存保存生成的token
         endpoints
-                .tokenStore(tokenStore())
+                .tokenStore(tokenStore)
+                .tokenEnhancer(jwtAccessTokenConverter())
                 //为password模式和code模式提供AuthenticationManager
                 .authenticationManager(authenticationManager)
                 //刷新令牌授权将包含对用户详细信息的检查，确保账户仍然活动，设置userDetailsService
@@ -81,6 +83,9 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST,HttpMethod.PUT,HttpMethod.DELETE,HttpMethod.OPTIONS)
                 //刷新token
                 .reuseRefreshTokens(true);
+        if(true){
+
+        }
     }
 
     /**
@@ -92,12 +97,36 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         // 开启/oauth/token_key验证端口认证权限访问 放开token_key、check_token
-        security.tokenKeyAccess("isAuthenticated()")
+        security.tokenKeyAccess("permitAll()")
                 // 开启/oauth/check_token验证端口认证权限访问
                 .checkTokenAccess("isAuthenticated()")
                 //允许表单认证
                 .allowFormAuthenticationForClients();
     }
+
+    @Bean
+    protected JwtAccessTokenConverter jwtAccessTokenConverter() {
+        ClassPathResource resource = new ClassPathResource("jwt/jwt.jks");
+        KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(resource, "auth_jwt".toCharArray());
+        JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
+        jwtAccessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair("oauth2-jwt"));
+        return jwtAccessTokenConverter;
+    }
+
+//    @Bean
+//    public JwtAccessTokenConverter accessTokenConverter() {
+//        JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
+//        jwtAccessTokenConverter.setKeyPair(keyPair());
+//        return jwtAccessTokenConverter;
+//    }
+//
+//    @Bean
+//    public KeyPair keyPair() {
+//        //从classpath下的证书中获取秘钥对
+//        org.springframework.security.rsa.crypto.KeyStoreKeyFactory keyStoreKeyFactory = new org.springframework.security.rsa.crypto.KeyStoreKeyFactory(new ClassPathResource("lcc-jwt.jks"),
+//                "lcc123".toCharArray());
+//        return keyStoreKeyFactory.getKeyPair("lcc-jwt", "lcc123".toCharArray());
+//    }
 
     /**
             *  自定义JdbcClientDetailsServiceBuilder
@@ -115,19 +144,24 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
     }
 
-    /**
-     *  自定义JdbcTokenStore
-     */
-    @Bean
-    public TokenStore jdbcTokenStore() {
-        Assert.state(dataSource != null, "DataSource must be provided");
-        return new JdbcTokenStore(dataSource);
-    }
-
-    @Bean
-    TokenStore tokenStore() {
-        return new RedisTokenStore(redisConnectionFactory);
-    }
+//    /**
+//     *  自定义JdbcTokenStore
+//     */
+//    @Bean
+//    public TokenStore jdbcTokenStore() {
+//        return new JdbcTokenStore(dataSource);
+//    }
+//
+//    @Bean
+//    TokenStore tokenStore() {
+//        return new RedisTokenStore(redisConnectionFactory);
+//    }
+//
+//    @Bean
+//    public TokenStore jwtTokenStore() {
+//        //token也使用数据的方式，后面会将JWT的使用方式
+//        return new JwtTokenStore(jwtAccessTokenConverter());
+//    }
 
     @Bean
     public OAuth2RequestFactory oAuth2RequestFactory() {
@@ -140,9 +174,9 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     @Bean
     public UserApprovalHandler userApprovalHandler() {
         JdbcTokenStoreUserApprovalHandler approvalHandler = new JdbcTokenStoreUserApprovalHandler();
-        approvalHandler.setTokenStore(jdbcTokenStore());
-        approvalHandler.setClientDetailsService(clientDetailsService());
-        approvalHandler.setRequestFactory(oAuth2RequestFactory());
+//        approvalHandler.setTokenStore(jdbcTokenStore());
+//        approvalHandler.setClientDetailsService(clientDetailsService());
+//        approvalHandler.setRequestFactory(oAuth2RequestFactory());
         return approvalHandler;
     }
 
