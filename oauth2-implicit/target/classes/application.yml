@@ -1,5 +1,0 @@
-server:
-  port: 9506
-spring:
-  application:
-    name: oauth2-implicit
