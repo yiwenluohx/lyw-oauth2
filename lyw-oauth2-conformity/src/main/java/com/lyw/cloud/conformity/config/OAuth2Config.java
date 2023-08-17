@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,6 +26,8 @@ import org.springframework.security.oauth2.provider.request.DefaultOAuth2Request
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
@@ -37,7 +40,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableAuthorizationServer
-@Import({com.lyw.cloud.conformity.config.TokenStoreConfig.class})
+@Import({com.lyw.cloud.conformity.config.TokenStoreConfig.class, PasswordEncoderConfig.class})
 public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
     @Autowired

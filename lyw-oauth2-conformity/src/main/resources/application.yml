@@ -22,3 +22,8 @@ platform:
       store:
         type: authJwt
 
+platform:
+  oauth2:
+    token:
+      store:
+        type: default
